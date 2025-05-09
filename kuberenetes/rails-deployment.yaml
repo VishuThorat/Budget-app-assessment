@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rails-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rails-app
+  template:
+    metadata:
+      labels:
+        app: rails-app
+    spec:
+      containers:
+      - name: rails-app
+        image: vishu24thorat/budget-app-web:v1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          value: "postgres://user:password@postgres:5432/myapp_development"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rails-app-service
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: rails-app
