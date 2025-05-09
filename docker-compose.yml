@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: blog_app
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: Budgy_development
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - blog_app_network
+
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
+    volumes:
+      - ".:/app"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - blog_app_network
+    environment:
+      - DATABASE_HOST=db  # Adding the host here so Rails knows where to look for the database
+
+volumes:
+  pg_data:
+
+networks:
+  blog_app_network:
+    driver: bridge
